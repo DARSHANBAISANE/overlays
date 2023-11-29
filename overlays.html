@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Event Calendar</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+      color: #333;
+      text-align: center;
+    }
+
+    header {
+      background-color: #333;
+      color: #fff;
+      padding: 10px;
+    }
+
+    #calendar {
+      max-width: 800px;
+      margin: 20px auto;
+      background-color: #fff;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      border-radius: 5px;
+      overflow: hidden;
+    }
+
+    .day {
+      display: inline-block;
+      width: calc(100% / 7);
+      padding: 10px;
+      box-sizing: border-box;
+    }
+
+    .day:hover {
+      background-color: #eee;
+      cursor: pointer;
+    }
+
+    .event {
+      background-color: #4caf50;
+      color: #fff;
+      padding: 5px;
+      border-radius: 3px;
+      margin-bottom: 5px;
+      cursor: pointer;
+    }
+    
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Event Calendar</h1>
+  </header>
+
+  <div id="calendar"></div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Sample events
+      var events = [
+        { date: '2023-11-30', title: 'Event 1' },
+        { date: '2023-12-05', title: 'Event 2' },
+        { date: '2023-12-15', title: 'Event 3' }
+      ];
+
+      // Render the calendar
+      renderCalendar(events);
+
+      // Function to render the calendar
+      function renderCalendar(events) {
+        var calendarContainer = document.getElementById('calendar');
+
+        // Get the first day of the month
+        var firstDay = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+
+        // Get the last day of the month
+        var lastDay = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0);
+
+        // Create the header with day names
+        var daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        var header = '<div>';
+        for (var i = 0; i < daysOfWeek.length; i++) {
+          header += '<div class="day">' + daysOfWeek[i] + '</div>';
+        }
+        header += '</div>';
+        calendarContainer.innerHTML = header;
+
+        // Create the calendar days
+        for (var day = firstDay; day <= lastDay; day.setDate(day.getDate() + 1)) {
+          var dayElement = document.createElement('div');
+          dayElement.className = 'day';
+          dayElement.innerText = day.getDate();
+          dayElement.addEventListener('click', function() {
+            var selectedDate = new Date(new Date().getFullYear(), new Date().getMonth(), this.innerText);
+            showEvents(selectedDate, events);
+          });
+          calendarContainer.appendChild(dayElement);
+        }
+      }
+
+      // Function to show events for a selected date
+      function showEvents(selectedDate, events) {
+        var eventContainer = document.createElement('div');
+        eventContainer.style.padding = '20px';
+
+        var title = document.createElement('h2');
+        title.innerText = 'Events on ' + selectedDate.toDateString();
+        eventContainer.appendChild(title);
+
+        var eventsOnSelectedDate = events.filter(function(event) {
+          return new Date(event.date).toDateString() === selectedDate.toDateString();
+        });
+
+        if (eventsOnSelectedDate.length === 0) {
+          var noEventsMessage = document.createElement('p');
+          noEventsMessage.innerText = 'No events on this date.';
+          eventContainer.appendChild(noEventsMessage);
+        } else {
+          eventsOnSelectedDate.forEach(function(event) {
+            var eventElement = document.createElement('div');
+            eventElement.className = 'event';
+            eventElement.innerText = event.title;
+            eventContainer.appendChild(eventElement);
+          });
+        }
+
+        // Clear previous events and append the new ones
+        document.getElementById('calendar').appendChild(eventContainer);
+      }
+    });
+  </script>
+
+</body>
+</html>
